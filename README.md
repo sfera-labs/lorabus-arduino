@@ -1,4 +1,4 @@
-# LoRaBus 
+# LoRaBus
 
 LoRaBus brings LoRa-enabled devices on a Modbus RTU network.
 
@@ -20,9 +20,7 @@ The LoRaBus network comprises one gateway and several remote nodes.
 The gateway is directly connected to the RS-485 bus and communicates via LoRa to the remote nodes to send commands and receive state updates.
 Each node responds to a different Modbus address.
 
-## Usage
-
-### Configuration
+## Configuration
 
 The nodes can be configured via serial console.
 The configuration console can be accessed through the module's RS-485 port or Arduino's USB port using any serial communication application (e.g. the Serial Monitor of the Arduino IDE).
@@ -53,9 +51,35 @@ When the module is powered-up or reset, you can enter console mode by typing fiv
 Select a function:
 ```
 
-#### Common parameters
+### Common parameters
+Each node (gateway and remote nodes) must be assigned a different Modbus unit address (function 1).
 
-#### Gateway
+Use functions 4, 5 and 6 to set the LoRa radio parameters. All units under the same LoRaBus network must have the same LoRa radio configuration.     
+A higher spreading factor lets you cover a larger distance between remote nodes and gateway, but entails a longer time-on-air for LoRa messages, which, in turn, means a higher consumption of the duty cycle.
+
+Use function 7 to set the maximum duty cycle to be used. the value is expressed in 1/1000, so, to set a 5% duty cycle, enter 50; for a 0.1% duty cycle, enter 1.     
+When the specified duty cycle is exceeded the module will stop sending LoRo mesages until the end of the current duty cycle window.
+
+**NB** Make sure to set a duty cycle no higher than the allowed one for the selected frequency.
+
+The duty cycle window (function 8) lets you set the time period over which the duty cycle is calculated. It can be set from 10 seconds to 1 hour (3600 seconds).    
+Set a small window if you want to make sure that a module is never "muted" for long periods. Set a larger window if, for instance, you foresee having many close updates/commands separated by long pauses.
+
+Function 9 lets you set a site-ID and a password used for the LoRa messages. All units under the same LoRaBus network must have the same site-ID and password. The site-ID is used for rapidly discard messages from difefrent LoRaBus networks, while the password is used to encrypt the content of messages.     
+
+If more LoRaBus networks are used in the same area, make sure to set different site-IDs and, if possible, use different LoRa frequencies.
+
+Use function C to define input/output rules. With these rules you can configure each one of the digital inputs to control the corresponding output relay. The rules string consists of four characters, where the leftmost character represents the rule for DI1/DO1 and the rightmost character for DI4/DO4.
+The possible rules are:
+
+`F`: follow - the relay is closed when input is high and open when low    
+`I`: invert - the relay is closed when input is low and open when high    
+`H`: flip on L>H transition - the relay is flipped at any input transition from low to high    
+`L`: flip on H>L transition - the relay is flipped at any input transition from high to low    
+`T`: flip on any transition - the relay is flipped at any input transition, both high to low and low to high    
+`-`: no rule - no control rule set for this relay.    
+
+### Gateway parameters
 A gateway must have its **serial interface** enabled. Use menu functions 2 and 3 to set the speed and parity.
 
 The **inputs mode** (function A) and the **inputs LoRa updates interval** (function B) are not relevant for the gateway.
@@ -78,11 +102,11 @@ Current configuration:
    LoRa duty cycle window (seconds): 600
    LoRa site-ID and password: ABC16Chars$ecretK&y
    Input modes: DDDDDD
-   I/O rules: ----
+   I/O rules: FI--
    Remote units: auto-discovery
 ```
 
-#### Remote units
+### Remote units parameters
 To configure a module as remote unit, disable the **serial interface** from function 2.
 
 The **inputs mode** (function A) must be set to specify if and how a specific input is used.      
@@ -118,4 +142,22 @@ Current configuration:
    I/O rules: ----
 ```
 
+## Modbus registers
 
+Refer to the following table for the list of available registers and corresponding supported Modbus functions.
+
+For the column "Functions":    
+1 = Read coils    
+2 = Read discrete inputs    
+3 = Read holding registers    
+4 = Read input registers    
+5 = Write single coil    
+6 = Write single register    
+15 = Write multiple coils    
+16 = Write multiple registers    
+
+|Address|R/W|Functions|Size|Data type|Unit|Description|
+|------:|:-:|---------|----|---------|----|-----------|
+|99|R|4|1 word|unsigned short|-|`0x21` for Iono MKR gateway<br/>`0x22` for Iono MKR remote unit|
+
+**TBD**
