@@ -146,7 +146,7 @@ Current configuration:
 
 Refer to the following table for the list of available registers and corresponding supported Modbus functions.
 
-For the column "Functions":    
+For the "Functions" column:    
 1 = Read coils    
 2 = Read discrete inputs    
 3 = Read holding registers    
@@ -158,6 +158,6 @@ For the column "Functions":
 
 |Address|R/W|Functions|Size|Data type|Unit|Description|
 |------:|:-:|---------|----|---------|----|-----------|
-|99|R|4|1 word|unsigned short|-|`0x21` for Iono MKR gateway<br/>`0x22` for Iono MKR remote unit|
+|99|R|4|1 word|unsigned short|-|Device ID:<br/>`0x21` for Iono MKR gateway<br/>`0x22` for Iono MKR remote unit|
 
 **TBD**
