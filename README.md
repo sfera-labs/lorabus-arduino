@@ -192,5 +192,5 @@ For the "Functions" column:
 |611|R/W|3,6|16|unsigned short|mV|Analog voltage output AO1: 0-10000, 65535 if not available|
 |5001|R|4|16|signed short|-|LoRa RSSI of the last received packet from this unit (remote units only)|
 |5002|R|4|16|unsigned short|dB/1000|LoRa SNR of the last received packet from this unit (remote units only)|
-|5101|R|4|16|unsigned short|dB|Age of last state update received from this unit, in seconds. 65535 is returned if no update has been received (remote units only)|
+|5101|R|4|16|unsigned short|sec|Age of last state update received from this unit. 65535 is returned if no update has been received (remote units only)|
 
