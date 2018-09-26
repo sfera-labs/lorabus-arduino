@@ -159,5 +159,38 @@ For the "Functions" column:
 |Address|R/W|Functions|Size|Data type|Unit|Description|
 |------:|:-:|---------|----|---------|----|-----------|
 |99|R|4|1 word|unsigned short|-|Device ID:<br/>`0x21` for Iono MKR gateway<br/>`0x22` for Iono MKR remote unit|
+|1|R/W|1,5,15|1 bit|bool|-|Relay DO1|
+|2|R/W|1,5,15|1 bit|bool|-|Relay DO2|
+|3|R/W|1,5,15|1 bit|bool|-|Relay DO3|
+|4|R/W|1,5,15|1 bit|bool|-|Relay DO4|
+|101|R|2|1 bit|bool|-|Digital input DI1, with debounce|
+|102|R|2|1 bit|bool|-|Digital input DI2, with debounce|
+|103|R|2|1 bit|bool|-|Digital input DI3, with debounce|
+|104|R|2|1 bit|bool|-|Digital input DI4, with debounce|
+|105|R|2|1 bit|bool|-|Digital input DI5, with debounce|
+|106|R|2|1 bit|bool|-|Digital input DI6, with debounce|
+|111|R|2|1 bit|bool|-|Digital input DI1, no debounce (gateway only)|
+|112|R|2|1 bit|bool|-|Digital input DI2, no debounce (gateway only)|
+|113|R|2|1 bit|bool|-|Digital input DI3, no debounce (gateway only)|
+|114|R|2|1 bit|bool|-|Digital input DI4, no debounce (gateway only)|
+|115|R|2|1 bit|bool|-|Digital input DI5, no debounce (gateway only)|
+|116|R|2|1 bit|bool|-|Digital input DI6, no debounce (gateway only)|
+|1001|R|4|1 word|unsigned short|-|DI1 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|1002|R|4|1 word|unsigned short|-|DI2 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|1003|R|4|1 word|unsigned short|-|DI3 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|1004|R|4|1 word|unsigned short|-|DI4 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|1005|R|4|1 word|unsigned short|-|DI5 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|1006|R|4|1 word|unsigned short|-|DI6 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|201|R|4|1 word|unsigned short|mV|Analog voltage input AV1: 0-30000, 65535 if not available|
+|202|R|4|1 word|unsigned short|mV|Analog voltage input AV2: 0-30000, 65535 if not available|
+|203|R|4|1 word|unsigned short|mV|Analog voltage input AV3: 0-30000, 65535 if not available|
+|204|R|4|1 word|unsigned short|mV|Analog voltage input AV4: 0-30000, 65535 if not available|
+|301|R|4|1 word|unsigned short|µA|Analog current input AI1: 0-25000, 65535 if not available|
+|302|R|4|1 word|unsigned short|µA|Analog current input AI2: 0-25000, 65535 if not available|
+|303|R|4|1 word|unsigned short|µA|Analog current input AI3: 0-25000, 65535 if not available|
+|304|R|4|1 word|unsigned short|µA|Analog current input AI4: 0-25000, 65535 if not available|
+|611|R/W|3,6|1 word|unsigned short|mV|Analog voltage output AO1: 0-10000, 65535 if not available|
+|5001|R|4|1 word|signed short|-|LoRa RSSI of the last received packet from this unit (remote units only)|
+|5002|R|4|1 word|unsigned short|dB/1000|LoRa SNR of the last received packet from this unit (remote units only)|
+|5101|R|4|1 word|unsigned short|dB|Age of last state update received from this unit, in seconds. 65535 is returned if no update has been received (remote units only)|
 
-**TBD**
