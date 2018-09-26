@@ -20,6 +20,8 @@ The LoRaBus network comprises one gateway and several remote nodes.
 The gateway is directly connected to the RS-485 bus and communicates via LoRa to the remote nodes to send commands and receive state updates.
 Each node responds to a different Modbus address.
 
+For details about the protocol used for LoRa messages between remote units and gateway refer to the [LoRaNet library](https://github.com/sfera-labs/arduino-lora-net).
+
 ## Configuration
 
 The nodes can be configured via serial console.
