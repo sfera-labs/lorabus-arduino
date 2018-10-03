@@ -60,14 +60,14 @@ Use functions 4, 5 and 6 to set the **LoRa radio parameters**. All units under t
 A higher **spreading factor** lets you cover a larger distance between remote nodes and gateway, but entails a longer time-on-air for LoRa messages, which, in turn, means a higher consumption of the duty cycle.
 
 Use function 7 to set the maximum **duty cycle** to be used. the value is expressed in 1/1000, so, to set a 5% duty cycle, enter 50; for a 0.1% duty cycle, enter 1.     
-When the specified duty cycle is exceeded the module will stop sending LoRa mesages until the end of the current duty cycle window.
+When the specified duty cycle is exceeded the module will stop sending LoRa messages until the end of the current duty cycle window.
 
 **NB** Make sure to set a duty cycle no higher than the allowed one for the selected frequency.
 
 The **duty cycle window** (function 8) lets you set the time period over which the duty cycle is calculated. It can be set from 10 seconds to 1 hour (3600 seconds).    
 Set a small window if you want to make sure that a module is never "muted" for long periods. Set a larger window if, for instance, you foresee having many close updates/commands separated by long pauses.
 
-Function 9 lets you set a **site-ID** and a **password** used for the LoRa messages. All units under the same LoRaBus network must have the same site-ID and password. The site-ID is used for rapidly discard messages from difefrent LoRaBus networks, while the password is used to encrypt the content of messages.     
+Function 9 lets you set a **site-ID** and a **password** used for the LoRa messages. All units under the same LoRaBus network must have the same site-ID and password. The site-ID is used for rapidly discard messages from different LoRaBus networks, while the password is used to encrypt the content of messages.     
 
 If more LoRaBus networks are used in the same area, make sure to set different site-IDs and, if possible, use different LoRa frequencies.
 
