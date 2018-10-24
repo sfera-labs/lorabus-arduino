@@ -833,30 +833,35 @@ void SerialConfig::_printConfiguration(byte address, byte speed, byte parity,
 
 template <typename T>
 bool SerialConfig::_numberEdit(T *value, int c, int length, long min, long max) {
-  int i;
-  long v;
+  int i = strlen(_inBuffer);
   switch (c) {
     case 8: case 127: // backspace
-      i = strlen(_inBuffer);
       if (i > 0) {
         _port->print('\b');
         _port->print(' ');
         _port->print('\b');
         _inBuffer[i - 1] = 0;
+      } else {
+        return true;
       }
       break;
     case 10: // newline
     case 13: // enter
-      if (strlen(_inBuffer) > 0) {
-        v = strtol(_inBuffer, NULL, 10);
+      if (i > 0) {
+        long v = strtol(_inBuffer, NULL, 10);
         if (v >= min && v <= max) {
           *value = (T) v;
-          return true;
+          _port->println();
+          _port->print("OK");
+        } else {
+          _port->println();
+          _port->print("ERROR");
         }
+        return true;
       }
       break;
     default:
-      if (strlen(_inBuffer) < length) {
+      if (i < length) {
         if (c >= '0' && c <= '9') {
           _port->print((char) c);
           _port->print((char) 0);
@@ -868,28 +873,34 @@ bool SerialConfig::_numberEdit(T *value, int c, int length, long min, long max) 
 }
 
 bool SerialConfig::_idPwdEdit(byte *value, int c, int size) {
-  int i;
+  int i = strlen(_inBuffer);
   switch (c) {
     case 8: case 127: // backspace
-      i = strlen(_inBuffer);
       if (i > 0) {
         _port->print('\b');
         _port->print(' ');
         _port->print('\b');
         _inBuffer[i - 1] = 0;
+      } else {
+        return true;
       }
       break;
     case 10: // newline
     case 13: // enter
-      if (strlen(_inBuffer) == size) {
-        strcpy((char *) value, _inBuffer);
+      if (i > 0) {
+        if (i == size) {
+          strcpy((char *) value, _inBuffer);
+          _port->println();
+          _port->print("OK");
+        } else {
+          _port->println();
+          _port->print("ERROR");
+        }
         return true;
-      } else {
-        return false;
       }
       break;
     default:
-      if (strlen(_inBuffer) < size) {
+      if (i < size) {
         if (c >= ' ' && c <= '~') {
           _port->print((char) c);
           _port->print((char) 0);
@@ -910,15 +921,22 @@ bool SerialConfig::_modesEdit(char *value, int c, int size) {
         _port->print(' ');
         _port->print('\b');
         _inBuffer[i - 1] = 0;
+      } else {
+        return true;
       }
       break;
     case 10: // newline
     case 13: // enter
-      if (i == size) {
-        strcpy(value, _inBuffer);
+      if (i > 0) {
+        if (i == size) {
+          strcpy(value, _inBuffer);
+          _port->println();
+          _port->print("OK");
+        } else {
+          _port->println();
+          _port->print("ERROR");
+        }
         return true;
-      } else {
-        return false;
       }
       break;
     default:
@@ -938,10 +956,9 @@ bool SerialConfig::_modesEdit(char *value, int c, int size) {
 }
 
 bool SerialConfig::_rulesEdit(char *value, int c, int size) {
-  int i;
+  int i = strlen(_inBuffer);
   switch (c) {
     case 8: case 127: // backspace
-      i = strlen(_inBuffer);
       if (i > 0) {
         _port->print('\b');
         _port->print(' ');
@@ -951,15 +968,20 @@ bool SerialConfig::_rulesEdit(char *value, int c, int size) {
       break;
     case 10: // newline
     case 13: // enter
-      if (strlen(_inBuffer) == size) {
-        strcpy(value, _inBuffer);
+      if (i > 0) {
+        if (i == size) {
+          strcpy(value, _inBuffer);
+          _port->println();
+          _port->print("OK");
+        } else {
+          _port->println();
+          _port->print("ERROR");
+        }
         return true;
-      } else {
-        return false;
       }
       break;
     default:
-      if (strlen(_inBuffer) < size) {
+      if (i < size) {
         if (c >= 'a') {
           c -= 32;
         }
