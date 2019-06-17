@@ -177,12 +177,12 @@ For the "Functions" column:
 |114|R|2|1|bool|-|Digital input DI4, no debounce (gateway only)|
 |115|R|2|1|bool|-|Digital input DI5, no debounce (gateway only)|
 |116|R|2|1|bool|-|Digital input DI6, no debounce (gateway only)|
-|1001|R|4|16|unsigned short|-|DI1 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
-|1002|R|4|16|unsigned short|-|DI2 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
-|1003|R|4|16|unsigned short|-|DI3 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
-|1004|R|4|16|unsigned short|-|DI4 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
-|1005|R|4|16|unsigned short|-|DI5 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
-|1006|R|4|16|unsigned short|-|DI6 counter, increased on every raising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|1001|R|4|16|unsigned short|-|DI1 counter, increased on every rising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|1002|R|4|16|unsigned short|-|DI2 counter, increased on every rising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|1003|R|4|16|unsigned short|-|DI3 counter, increased on every rising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|1004|R|4|16|unsigned short|-|DI4 counter, increased on every rising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|1005|R|4|16|unsigned short|-|DI5 counter, increased on every rising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
+|1006|R|4|16|unsigned short|-|DI6 counter, increased on every rising edge, after the debounce filter. Range: 0-65535 (rolls back to 0 after 65535)|
 |201|R|4|16|unsigned short|mV|Analog voltage input AV1: 0-30000, 65535 if not available|
 |202|R|4|16|unsigned short|mV|Analog voltage input AV2: 0-30000, 65535 if not available|
 |203|R|4|16|unsigned short|mV|Analog voltage input AV3: 0-30000, 65535 if not available|
