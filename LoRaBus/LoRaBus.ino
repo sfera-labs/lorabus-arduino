@@ -29,19 +29,21 @@ IonoLoRaLocalSlave loRaSlave;
 IonoLoRaLocalMaster loRaMaster;
 IonoLoRaRemoteSlave slavesBuffer[MAX_SLAVES];
 LoRaRemoteSlave *slavesRefsBuffer[MAX_SLAVES];
-bool isGateway;
-bool initialized = false;
+bool initialized;
 
 void setup() {
   SerialConfig.setup();
   while (!SerialConfig.isConfigured) {
     SerialConfig.process();
   }
-
-  initialize();
+  initialized = false;
 }
 
 void loop() {
+  if (!initialized) {
+    initialized = initialize();
+    return;
+  }
   if (SerialConfig.isGateway) {
     loRaMaster.process();
     if (SerialConfig.isAvailable) {
@@ -62,9 +64,13 @@ void loop() {
   Watchdog.clear();
 }
 
-void initialize() {
+bool initialize() {
   if (SerialConfig.frequency > 0l) {
-    LoRa.begin(SerialConfig.frequency * 1000l);
+    if (!LoRa.begin(SerialConfig.frequency * 1000l)) {
+      __DEBUGprintln("LoRaBus: initialization failed");
+      delay(200);
+      return false;
+    }
     LoRa.enableCrc();
     LoRa.setSyncWord(0x12);
     LoRa.setSpreadingFactor(SerialConfig.sf);
@@ -110,6 +116,7 @@ void initialize() {
       loRaSlave.setUpdatesInterval(DI5, SerialConfig.inItvl[4]);
       loRaSlave.setUpdatesInterval(DI6, SerialConfig.inItvl[5]);
     }
+    return true;
   }
 
   if (SerialConfig.rules[0] != '\0') {
