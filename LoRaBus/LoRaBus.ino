@@ -1,10 +1,10 @@
 /*
-  LoRaBus.cpp
+  LoRaBus.cpp - Modbus over LoRa
 
-    Copyright (C) 2018 Sfera Labs S.r.l. - All rights reserved.
+    Copyright (C) 2018-2022 Sfera Labs S.r.l. - All rights reserved.
 
     For information, see:
-    http://www.sferalabs.cc/iono
+    http://www.sferalabs.cc/
 
   This code is free software; you can redistribute it and/or
   modify it under the terms of the GNU Lesser General Public
@@ -34,58 +34,49 @@ bool initialized = false;
 
 void setup() {
   SerialConfig.setup();
-
-  for (int i = 0; i < MAX_SLAVES; i++) {
-    slavesRefsBuffer[i] = &slavesBuffer[i];
+  while (!SerialConfig.isConfigured) {
+    SerialConfig.process();
   }
+
+  initialize();
 }
 
 void loop() {
-  if (SerialConfig.done()) {
-    if (initialized) {
-      Watchdog.clear();
-      if (isGateway) {
-        loRaMaster.process();
-        IonoModbusRtuSlave.process();
-      } else {
-        loRaSlave.process();
+  if (SerialConfig.isGateway) {
+    loRaMaster.process();
+    if (SerialConfig.isAvailable) {
+      SerialConfig.process();
+      if (!SerialConfig.isAvailable) {
+        startModbus();
       }
+      Iono.process();
     } else {
-      initialize();
+      IonoModbusRtuSlave.process();
     }
   } else {
-    SerialConfig.process();
+    loRaSlave.process();
+    if (SerialConfig.isAvailable) {
+      SerialConfig.process();
+    }
   }
+  Watchdog.clear();
 }
 
 void initialize() {
-  isGateway = SerialConfig.speed >= 1 && SerialConfig.speed <= 8;
-  if (isGateway) {
-    switch (SerialConfig.parity) {
-      case 2:
-        IonoModbusRtuSlave.begin(0, SPEEDS[SerialConfig.speed], SERIAL_8O1, DELAY);
-        break;
-      case 3:
-        IonoModbusRtuSlave.begin(0, SPEEDS[SerialConfig.speed], SERIAL_8N2, DELAY);
-        break;
-      default:
-        IonoModbusRtuSlave.begin(0, SPEEDS[SerialConfig.speed], SERIAL_8E1, DELAY);
-        break;
-    }
-
-    IonoModbusRtuSlave.setCustomHandler(&onModbusRequest);
-  }
-
-  if (SerialConfig.frequency >= 863000000l) {
-    LoRa.begin(SerialConfig.frequency);
+  if (SerialConfig.frequency > 0l) {
+    LoRa.begin(SerialConfig.frequency * 1000l);
     LoRa.enableCrc();
     LoRa.setSyncWord(0x12);
     LoRa.setSpreadingFactor(SerialConfig.sf);
     LoRa.setTxPower(SerialConfig.txPower);
-    LoRaNet.init(SerialConfig.idPwd, 3, SerialConfig.idPwd + 3);
+    LoRaNet.init(SerialConfig.siteId, 3, SerialConfig.pwd);
     LoRaNet.setDutyCycle(SerialConfig.dcWin, SerialConfig.dc);
 
-    if (isGateway) {
+    if (SerialConfig.isGateway) {
+      for (int i = 0; i < MAX_SLAVES; i++) {
+        slavesRefsBuffer[i] = &slavesBuffer[i];
+      }
+
       if (SerialConfig.slavesNum > 0) {
         for (int i = 0; i < SerialConfig.slavesNum; i++) {
           slavesRefsBuffer[i]->setAddr(SerialConfig.slavesAddr[i]);
@@ -121,7 +112,7 @@ void initialize() {
     }
   }
 
-  if (SerialConfig.rules[0] != 0) {
+  if (SerialConfig.rules[0] != '\0') {
     setLink(SerialConfig.modes[0], SerialConfig.rules[0], DI1, DO1);
     setLink(SerialConfig.modes[1], SerialConfig.rules[1], DI2, DO2);
     setLink(SerialConfig.modes[2], SerialConfig.rules[2], DI3, DO3);
@@ -129,8 +120,26 @@ void initialize() {
   }
 
   Watchdog.setup();
+}
 
-  initialized = true;
+void startModbus() {
+  IonoModbusRtuSlave.setInputMode(1, SerialConfig.modes[0]);
+  IonoModbusRtuSlave.setInputMode(2, SerialConfig.modes[1]);
+  IonoModbusRtuSlave.setInputMode(3, SerialConfig.modes[2]);
+  IonoModbusRtuSlave.setInputMode(4, SerialConfig.modes[3]);
+  switch (SerialConfig.parity) {
+    case 2:
+      IonoModbusRtuSlave.begin(0, SPEEDS[SerialConfig.speed], SERIAL_8O1, DELAY);
+      break;
+    case 3:
+      IonoModbusRtuSlave.begin(0, SPEEDS[SerialConfig.speed], SERIAL_8N2, DELAY);
+      break;
+    default:
+      IonoModbusRtuSlave.begin(0, SPEEDS[SerialConfig.speed], SERIAL_8E1, DELAY);
+      break;
+  }
+
+  IonoModbusRtuSlave.setCustomHandler(&onModbusRequest);
 }
 
 void subscribeMultimode(char mode, uint8_t dix, uint8_t avx, uint8_t aix) {

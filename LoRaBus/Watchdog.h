@@ -1,9 +1,9 @@
 /*
   Watchdog.h
 
-    Copyright (C) 2018 Sfera Labs S.r.l. - All rights reserved.
+    Copyright (C) 2018-2022 Sfera Labs S.r.l. - All rights reserved.
 
-    For information, see the iono web site:
+    For information, see:
     http://www.sferalabs.cc/
 
   This code is free software; you can redistribute it and/or
@@ -22,10 +22,16 @@ class Watchdog {
 
   public:
     static void setup();
+    static void disable();
     static void clear();
 };
 
 unsigned long  Watchdog::_ts;
+
+void Watchdog::disable() {
+  REG_WDT_CTRL &= ~WDT_CTRL_ENABLE;
+  while(WDT->STATUS.bit.SYNCBUSY);
+}
 
 void Watchdog::setup() {
   // Set up the generic clock (GCLK2) used to clock the watchdog timer at 1.024kHz
