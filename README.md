@@ -2,9 +2,7 @@
 
 LoRaBus brings LoRa-enabled devices on a Modbus RTU network.
 
-This repo contains the implementation of LoRaBus for Arduino MKR-based modules.
-
-As of now, LoRaBus is only supported on [Iono MKR](https://www.sferalabs.cc/iono-mkr/), which can be used both as LoRa-Modbus gateway or as LoRa remote unit.
+As of now, LoRaBus is only supported on [Iono MKR](https://www.sferalabs.cc/product/iono-mkr/), which can be used both as LoRa-Modbus gateway or as LoRa remote unit.
 
 The LoRaBus sketch requires the following libraries:
 * [Iono](https://github.com/sfera-labs/iono/tree/master/Iono)
@@ -13,6 +11,9 @@ The LoRaBus sketch requires the following libraries:
 * [LoRa](https://github.com/sfera-labs/arduino-LoRa)
 * [IonoLoRaNet](https://github.com/sfera-labs/iono/tree/master/IonoLoRaNet)
   * which depends on [LoRaNet](https://github.com/sfera-labs/arduino-lora-net)
+
+It has been tested on Iono MKR with Arduino MKR WAN 1300/1310 boards running firmware version 1.2.3.    
+To update the firmware, download the [MKRWAN library](https://github.com/arduino-libraries/MKRWAN) (version 1.1.0) and run the "MKRWANFWUpdate_standalone" example.
 
 ## Architecture
 
@@ -29,49 +30,92 @@ The configuration console can be accessed through the module's RS-485 port or Ar
 
 Set the communication speed to 9600, 8 bits, no parity, no flow-control and connect the cable.
 
-When the module is powered-up or reset, you can enter console mode by typing five or more consecutive space characters within 10 seconds from reset. If any other character is received, the module will enter the LoRaBus mode.
+When the module is powered-up or reset, you can enter console mode by typing five or more consecutive space characters within 10 seconds from reset. If any other character is received, the module will start running in LoRaBus mode.
 
 ```
-=== Sfera Labs - LoRaBus configuration menu - v0.1 ===
+=== Sfera Labs - LoRaBus configuration - v1.0 ===
 
-   0. Print current configuration
-   1. Set Modbus unit address
-   2. Enable/disable serial interface and set speed
-   3. Set serial port parity
-   4. Enable/disable LoRa and set frequency
-   5. Set LoRa TX power
-   6. Set LoRa spreading factor
-   7. Set LoRa duty cycle
-   8. Set LoRa duty cycle window
-   9. Set LoRa site-ID and password
-   A. Set inputs mode
-   B. Set inputs LoRa updates interval
-   C. Set input/output rules
-   D. Set remote units addresses
-   E. Save configuration and restart
+    1. Configuration wizard
+    2. Import configuration
+    3. Export configuration
 
-Select a function:
+>
+```
+
+By selecting `1` you enter the configuration wizard that walks you step by step in configuring all parameters.
+
+After a unit is configured you can export its configuration (function `2`) to be then imported (function `3`) after a firmware update or on another unit (with the required modifications).
+
+The exported configuration is printed in the console; copy/paste it to your favourite text editor, save it for backup or modify the required parameters and import it on another unit by selecting function `2` and pasting the whole configuration text in the console.
+
+**Gateway unit configuration example:**
+
+```
+[GATEWAY]
+
+Unit address: 1
+LoRa frequency: 869500
+LoRa TX power: 14
+LoRa spreading factor: 7
+LoRa duty cycle: 10.00
+LoRa duty cycle window: 600
+Site ID: abc
+Password: 16AsciiCharsPwrd
+Input modes: DDVI-D
+I/O rules: FI--
+Serial speed: 19200
+Serial parity: Even
+Remote units: 2, 3
+```
+
+**Remote unit configuration example:**
+
+```
+[REMOTE UNIT]
+
+Unit address: 2
+LoRa frequency: 869500
+LoRa TX power: 14
+LoRa spreading factor: 7
+LoRa duty cycle: 10.00
+LoRa duty cycle window: 600
+Site ID: abc
+Password: 16AsciiCharsPwrd
+Input modes: VDDI--
+I/O rules: -LT-
+Input 1 updates interval: 5
+Input 2 updates interval: 5
+Input 3 updates interval: 5
+Input 4 updates interval: 5
+Input 5 updates interval: 0
+Input 6 updates interval: 0
 ```
 
 ### Common parameters
-Each node (gateway and remote nodes) must be assigned a different **Modbus unit address** (function 1).
 
-Use functions 4, 5 and 6 to set the **LoRa radio parameters**. All units under the same LoRaBus network must have the same LoRa radio configuration.     
+Each node (gateway and remote nodes) must be assigned a different **Unit address**, which corresponds to the Modbus address to be used to poll th eunit.
+
+All units under the same LoRaBus network must have the same **LoRa radio parameters**.
+
 A higher **spreading factor** lets you cover a larger distance between remote nodes and gateway, but entails a longer time-on-air for LoRa messages, which, in turn, means a higher consumption of the duty cycle.
 
-Use function 7 to set the maximum **duty cycle** to be used. the value is expressed in 1/1000, so, to set a 5% duty cycle, enter 50; for a 0.1% duty cycle, enter 1.     
+The **duty cycle** is expressed in 1/1000. To set a 5% duty cycle, enter 50; for a 0.1% duty cycle, enter 1.     
 When the specified duty cycle is exceeded the module will stop sending LoRa messages until the end of the current duty cycle window.
 
-**NB** Make sure to set a duty cycle no higher than the allowed one for the selected frequency.
+**NB** Make sure to set a duty cycle no higher than the allowed one for the selected frequency in your region.
 
-The **duty cycle window** (function 8) lets you set the time period over which the duty cycle is calculated. It can be set from 10 seconds to 1 hour (3600 seconds).    
+The **duty cycle window** lets you set the time period over which the duty cycle is calculated. It can be set from 10 seconds to 1 hour (3600 seconds).    
 Set a small window if you want to make sure that a module is never "muted" for long periods. Set a larger window if, for instance, you foresee having many close updates/commands separated by long pauses.
 
-Function 9 lets you set a **site-ID** and a **password** used for the LoRa messages. All units under the same LoRaBus network must have the same site-ID and password. The site-ID is used for rapidly discard messages from different LoRaBus networks, while the password is used to encrypt the content of messages.     
+All units under the same LoRaBus network must have the same **Site ID** and **Password**. The site ID (3 ASCII characters) is used for rapidly discard messages from different LoRaBus networks, while the password (16 ASCII characters) is used to encrypt the content of messages.
 
-If more LoRaBus networks are used in the same area, make sure to set different site-IDs and, if possible, use different LoRa frequencies.
+If more LoRaBus networks are used in the same area, make sure to set different site IDs and, if possible, use different LoRa frequencies.
 
-Use function C to define **input/output rules**. With these rules you can configure each one of the digital inputs to control the corresponding output relay. The rules string consists of four characters, where the leftmost character represents the rule for DI1/DO1 and the rightmost character for DI4/DO4.
+The **Inputs modes** parameter is a 6 characters string that specifies if and how each input is used.      
+Inputs 1 to 4 can be used as digital (`D`), voltage (`V`) or current (`I`); inputs 5 and 6 only as digital.
+On a remote unit, if you do not want an input to trigger LoRa updates (i.e. you are not going to read its state from the gateway), set it to "ignore" (`-`).
+
+With the **I/O rules** parameter you can configure each one of the digital inputs to control the corresponding output relay. The rules string consists of 4 characters, where the leftmost character represents the rule for DI1/DO1 and the rightmost character for DI4/DO4.
 The possible rules are:
 
 `F`: follow - the relay is closed when input is high and open when low    
@@ -82,67 +126,18 @@ The possible rules are:
 `-`: no rule - no control rule set for this relay.    
 
 ### Gateway parameters
-A gateway must have its **serial interface** enabled. Use menu functions 2 and 3 to set the speed and parity.
 
-The **inputs mode** (function A) and the **inputs LoRa updates interval** (function B) are not relevant for the gateway.
+**Serial speed** and **Serial parity** set the configuration of the RS-485 interface for Modbus communication.    
+Serial speed allowed values: `1200`, `2400`, `4800`, `9600`, `19200`, `38400`, `57600`, `115200`.    
+Serial parity allowed values: `Even`, `Odd`, `None`.
 
-With function D you can choose to specify the address of the remote nodes which are going to be used with this gateway. If you do, when the gateway starts, it will actively try to connect to the nodes speeding up the pairing process. If you don't (auto-discovery), the gateway will have to wait for the nodes to send a message to it.
-
-When a module is configured as gateway, its current configuration (function 0) will show as follows:
-
-```
-Select a function: 0
-
-Current configuration:
-   Unit address: 10
-   Serial speed: 115200
-   Serial parity: Even
-   LoRa frequency: 869500000
-   LoRa TX power: 14
-   LoRa spreading factor: 7
-   LoRa duty cycle (1/1000): 100
-   LoRa duty cycle window (seconds): 600
-   LoRa site-ID and password: ABC16Chars$ecretK&y
-   Input modes: DDDDDD
-   I/O rules: FI--
-   Remote units: auto-discovery
-```
+In **Remote units** you can choose to specify the list of addresses of the remote nodes which are going to be used with this gateway, or `auto-discovery`. If you set the addresses, when the gateway starts, it will actively try to connect to the nodes speeding up the pairing process. If you  set auto-discovery, the gateway will have to wait for the nodes to send a message for the pairing to occur.
 
 ### Remote units parameters
-To configure a module as remote unit, disable the **serial interface** from function 2.
 
-The **inputs mode** (function A) must be set to specify if and how a specific input is used.      
-Inputs 1 to 4 can be used as digital (`D`), voltage (`V`) or current (`I`); inputs 5 and 6 only as digital.
-If you do not want an input to trigger LoRa updates (i.e. you are not going to read its state from the gateway), set it to "ignore" (`-`).
-
-The function **Set inputs LoRa updates interval** (B) lets you limit the frequency of state updates.
+The **Input N updates interval** parameters let you limit the frequency of state updates.
 After an update has been triggered by an input variation, further variations will be ignored for the specified number of seconds.
 Set the interval to 0 to trigger updates on each variation.
-
-When a module is configured as remote unit, its current configuration (function 0) will show as follows:
-
-```
-Select a function: 0
-
-Current configuration:
-   Unit address: 11
-   Serial: disabled
-   LoRa frequency: 869500000
-   LoRa TX power: 14
-   LoRa spreading factor: 7
-   LoRa duty cycle (1/1000): 100
-   LoRa duty cycle window (seconds): 600
-   LoRa site-ID and password: ABC16Chars$ecretK&y
-   Input modes: DVVI-D
-   Input LoRa updates interval (seconds):
-      Input 1: 10
-      Input 2: 10
-      Input 3: 60
-      Input 4: 0
-      Input 5: 0
-      Input 6: 0
-   I/O rules: ----
-```
 
 ## Modbus registers
 
@@ -195,4 +190,3 @@ For the "Functions" column:
 |5001|R|4|16|signed short|-|LoRa RSSI of the last received packet from this unit (remote units only)|
 |5002|R|4|16|unsigned short|dB/1000|LoRa SNR of the last received packet from this unit (remote units only)|
 |5101|R|4|16|unsigned short|sec|Age of last state update received from this unit. 65535 is returned if no update has been received (remote units only)|
-
