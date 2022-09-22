@@ -93,7 +93,7 @@ Input 6 updates interval: 0
 
 ### Common parameters
 
-Each node (gateway and remote nodes) must be assigned a different **Unit address**, which corresponds to the Modbus address to be used to poll th eunit.
+Each node (gateway and remote nodes) must be assigned a different **Unit address**, which corresponds to the Modbus address to be used to poll the unit.
 
 All units under the same LoRaBus network must have the same **LoRa radio parameters**.
 
