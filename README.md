@@ -4,13 +4,9 @@ LoRaBus brings LoRa-enabled devices on a Modbus RTU network.
 
 As of now, LoRaBus is only supported on [Iono MKR](https://www.sferalabs.cc/product/iono-mkr/), which can be used both as LoRa-Modbus gateway or as LoRa remote unit.
 
-The LoRaBus sketch requires the following libraries:
-* [Iono](https://github.com/sfera-labs/iono/tree/master/Iono)
-* [IonoModbusRtuSlave](https://github.com/sfera-labs/iono/tree/master/IonoModbusRtu)
-  * which depends on [ModbusRtuSlave](https://github.com/sfera-labs/arduino-modbus-rtu-slave)
-* [LoRa](https://github.com/sfera-labs/arduino-LoRa)
-* [IonoLoRaNet](https://github.com/sfera-labs/iono/tree/master/IonoLoRaNet)
-  * which depends on [LoRaNet](https://github.com/sfera-labs/arduino-lora-net)
+The LoRaBus sketch requires the following libraries and their dependencies:
+* [Iono MKR LoRaNet](https://github.com/sfera-labs/iono-mkr-lora-net)
+* [FlashStorage](https://www.arduino.cc/reference/en/libraries/flashstorage/)
 
 It has been tested on Iono MKR with Arduino MKR WAN 1300/1310 boards running firmware version 1.2.3.    
 To update the firmware, download the [MKRWAN library](https://github.com/arduino-libraries/MKRWAN) (version 1.1.0) and run the "MKRWANFWUpdate_standalone" example.
