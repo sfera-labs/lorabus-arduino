@@ -4,7 +4,7 @@ LoRaBus brings LoRa-enabled devices on a Modbus RTU network.
 
 As of now, LoRaBus is only supported on [Iono MKR](https://www.sferalabs.cc/product/iono-mkr/), which can be used both as LoRa-Modbus gateway or as LoRa remote unit.
 
-The LoRaBus sketch requires the following libraries and their dependencies:
+The [LoRaBus Arduino sketch](./LoRaBus) requires the following libraries and their dependencies:
 * [Iono MKR LoRaNet](https://github.com/sfera-labs/iono-mkr-lora-net)
 * [FlashStorage](https://www.arduino.cc/reference/en/libraries/flashstorage/)
 
